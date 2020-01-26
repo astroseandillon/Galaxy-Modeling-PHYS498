@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 print('holy fuck this actually worked')
 
 
-
+s = 'showing my mom and sister how this works'
 
 
 
