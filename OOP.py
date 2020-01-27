@@ -14,5 +14,22 @@ import astropy as ap
 
 
 
+class Dog:
+    
+    species = 'mammal'
+    
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+        
+        
+        
+        
 
+molly = Dog('Molly', 10)
 
+print("{} is {}".format(molly.name, molly.age))
+
+if molly.species == "mammal":
+    print("{} is a {}!".format(molly.name, molly.species))
+    
