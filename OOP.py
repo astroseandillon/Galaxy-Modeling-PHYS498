@@ -21,15 +21,29 @@ class Dog:
     def __init__(self, name, age):
         self.name = name
         self.age = age
-        
-        
-        
-        
-
-molly = Dog('Molly', 10)
-
-print("{} is {}".format(molly.name, molly.age))
-
-if molly.species == "mammal":
-    print("{} is a {}!".format(molly.name, molly.species))
     
+    def speak(self, sound):
+        return "{} says {}".format(self.name, sound)
+        
+    def description(self):
+        return "{} is {} years old".format(self.name, self.age)    
+        
+        
+        
+        
+class Mutt(Dog):
+    
+    def run(self, speed):
+        return "{} runs {}".format(self.name, speed)     
+        
+ 
+
+
+
+      
+
+molly = Mutt('Molly', 10)
+print(molly.description()) 
+
+print(molly.run('slowly'))
+ 
