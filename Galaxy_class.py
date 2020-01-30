@@ -14,6 +14,9 @@ class Galaxy():
     This is just some ideas for properties we can give to our galaxies. Anyone 
     who has any idea of other things to add, feel free to add them and we can 
     figure it out together.
+    
+    CREATE CHILD CLASSES
+    
     """
     
     def __init__(self):
@@ -25,7 +28,22 @@ class Galaxy():
     def SFR():
         pass
     
+<<<<<<< HEAD
     def bar(bool):
         #True = barred galaxy, False = unbarred galaxy
         #we can play with this some more
         return bool
+=======
+    def bulge(bool):
+        return bool
+    
+    def halo(self, size, radius, mass):
+        size = self.size
+        radius = self.radius
+        mass = self.mass
+        pass
+    
+    def bulge_dimensions(self, bulge, radius, phi_min, phi_max, theta_min, theta_max):
+        if bulge == True:
+            
+>>>>>>> 124fb4a0b3e32354bb4a890e60ba5d17a8f4646f
