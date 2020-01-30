@@ -24,3 +24,8 @@ class Galaxy():
     
     def SFR():
         pass
+    
+    def bar(bool):
+        #True = barred galaxy, False = unbarred galaxy
+        #we can play with this some more
+        return bool
