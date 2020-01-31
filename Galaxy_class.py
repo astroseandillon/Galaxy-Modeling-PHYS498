@@ -8,7 +8,7 @@ This file is to create an object that we can refer to our gravitational bodies.
 I figure that if we can describe each of galaxies by their conditions, which 
 can help simplify our code.
 """
-
+import numpy as np
 class Galaxy():
     """
     This is just some ideas for properties we can give to our galaxies. Anyone 
@@ -19,37 +19,32 @@ class Galaxy():
     
     """
     
-    def __init__(self):
-        pass
+    def __init__(self, stellar_mass):
+        self.stellar_mass = stellar_mass
     
-    def mass(self):
-        return self.mass
-    
-    def SFR():
-        pass
-    
+
     def bar(bool):
         #True = barred galaxy, False = unbarred galaxy
         #we can play with this some more
         return bool
 
-    def bulge(bool):
-        return bool
     
     def halo(self, size, radius, mass):
-        size = self.size
-        radius = self.radius
-        mass = self.mass
-        pass
+        self.size = size
+        self.radius = radius
+        self.mass = mass
+
+class BulgeGalaxy(Galaxy):
     
-    def bulge_dimensions(self, bulge, radius, phi_min, phi_max, theta_min, theta_max):
-        if bulge == False:
-            pass
-        else:
-            radius = self.radius
-            phi_min = self.phi_min
-            phi_max = self.phi_max
-            theta_min = self.theta_min
-            theta_max = self.theta_max
-        
-        
+    def __init__(self, radius, phi_min, phi_max, theta_min, theta_max):
+        self.radius = radius
+        self.phi_min = phi_min
+        self.phi_max = phi_max
+        self.theta_min = theta_min
+        self.theta_max = theta_max
+
+
+M51 = BulgeGalaxy(0, np.pi, 0, np.pi/6, 0)
+
+print(M51.radius)
+
