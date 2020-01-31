@@ -36,15 +36,12 @@ class Galaxy():
 
 class BulgeGalaxy(Galaxy):
     
-    def __init__(self, radius, phi_min, phi_max, theta_min, theta_max):
+    def dimensions(self, radius, phi_min, phi_max, theta_min, theta_max):
         self.radius = radius
         self.phi_min = phi_min
         self.phi_max = phi_max
         self.theta_min = theta_min
         self.theta_max = theta_max
+        return np.array([self.radius, self.phi_min, self.phi_max, self.theta_min, self.theta_max])
 
-
-M51 = BulgeGalaxy(0, np.pi, 0, np.pi/6, 0)
-
-print(M51.radius)
 
