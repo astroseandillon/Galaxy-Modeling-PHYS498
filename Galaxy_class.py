@@ -28,12 +28,11 @@ class Galaxy():
     def SFR():
         pass
     
-<<<<<<< HEAD
     def bar(bool):
         #True = barred galaxy, False = unbarred galaxy
         #we can play with this some more
         return bool
-=======
+
     def bulge(bool):
         return bool
     
@@ -44,6 +43,13 @@ class Galaxy():
         pass
     
     def bulge_dimensions(self, bulge, radius, phi_min, phi_max, theta_min, theta_max):
-        if bulge == True:
-            
->>>>>>> 124fb4a0b3e32354bb4a890e60ba5d17a8f4646f
+        if bulge == False:
+            pass
+        else:
+            radius = self.radius
+            phi_min = self.phi_min
+            phi_max = self.phi_max
+            theta_min = self.theta_min
+            theta_max = self.theta_max
+        
+        
