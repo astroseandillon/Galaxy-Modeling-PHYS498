@@ -19,29 +19,20 @@ class Galaxy():
     
     """
     
-    def __init__(self, stellar_mass):
+    def __init__(self, stellar_mass, radius, phi_min, phi_max, theta_min, theta_max):
         self.stellar_mass = stellar_mass
-    
-
-    def bar(bool):
-        #True = barred galaxy, False = unbarred galaxy
-        #we can play with this some more
-        return bool
-
-    
-    def halo(self, size, radius, mass):
-        self.size = size
-        self.radius = radius
-        self.mass = mass
-
-class BulgeGalaxy(Galaxy):
-    
-    def dimensions(self, radius, phi_min, phi_max, theta_min, theta_max):
         self.radius = radius
         self.phi_min = phi_min
         self.phi_max = phi_max
         self.theta_min = theta_min
         self.theta_max = theta_max
-        return np.array([self.radius, self.phi_min, self.phi_max, self.theta_min, self.theta_max])
+        return 
 
+m51 = Galaxy(10, 9, 8, 7, 6, 5)
 
+print(m51.stellar_mass)
+print(m51.radius)
+print(m51.phi_min)
+print(m51.phi_max)
+print(m51.theta_min)
+print(m51.theta_max)
