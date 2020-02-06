@@ -6,23 +6,23 @@ This is a temporary script file.
 
 Author: Bjorn Larsen
 
-Now that you’ve done two gravitating bodies in two dimensions, let’s have a little more
-fun and look at the interaction of three gravitating bodies in three dimensions. This is a
-seemingly simple problem, but it turns out to have some extremely rich dynamics up to
-and including dynamical chaos. Let’s assume you have three stars which all have the mass
-of the Sun and which only interact via gravity. The equations of motion for these stars are
-given by
+Now that you’ve done two gravitating bodies in two dimensions, let’s have a 
+little more fun and look at the interaction of three gravitating bodies in 
+three dimensions. This is a seemingly simple problem, but it turns out to 
+have some extremely rich dynamics up to and including dynamical chaos. Let’s 
+assume you have three stars which all have the mass of the Sun and which only 
+interact via gravity. The equations of motion for these stars are given by
 
     d2x1/dt2 = G*M2*(x2 - x1)/|x2 - x1|^3 + G*M3*(x3 - x1)/|x3 - x1|^3
     d2x2/dt2 = G*M3*(x3 - x2)/|x3 - x2|^3 + G*M1*(x1 - x2)/|x1 - x2|^3
     d2x3/dt2 = G*M2*(x2 - x3)/|x2 - x3|^3 + G*M1*(x1 - x3)/|x1 - x3|^3
 
-where ~x1, ~x2, ~x3 are the vector positions of stars 1, 2, and 3 as functions of time. As
-was the case previously, we will need initial positions and velocities, for a total of eighteen
-initial conditions.
+where ~x1, ~x2, ~x3 are the vector positions of stars 1, 2, and 3 as 
+functions of time. As was the case previously, we will need initial positions 
+and velocities, for a total of eighteen initial conditions.
 
-These equations should conserve energy and momentum. The total energy of the system
-is given by
+These equations should conserve energy and momentum. The total energy of the
+system is given by
 
     Etot = (1/2)*(M1*v1^2 + M2*v2^2 + M3*v3^2) - G*(M1*M2/|x1 - x2| + M1*M3/|x1 - x3| + M2*M3/|x2 - x3|)
 
@@ -30,25 +30,26 @@ The total momentum of the system should be given by
 
     ptot = M1*dx1/dt + M2*dx2/dt + M3*dx3/dt
 
-As you learned in introductory mechanics, the total energy and all three components of
-the total momentum should be conserved over time.
-Construct evolution equations for each component of the position vectors and then
-make them all first order (eighteen equations total). Be sure to include these equations
-in the comments at the top of your code. Use scipy.integrate.solve ivp in the SciPy
-library to evolve these equations in time. Explore the evolution for different combinations
+As you learned in introductory mechanics, the total energy and all three 
+components of the total momentum should be conserved over time.
 
-of masses and initial conditions until you find a system where all three bodies start within
-1 AU of each other and remain bound for at least 100 years. Develop a useful way to
-display the results. Also plot the total energy and momentum of your system as a function of time.
-What do you notice? Finally, explore several different methods available in
-solve ivp using the method keyword.
+Construct evolution equations for each component of the position vectors and 
+then make them all first order (eighteen equations total). Be sure to include 
+these equations in the comments at the top of your code. 
+Use scipy.integrate.solve ivp in the SciPy library to evolve these equations 
+in time. Explore the evolution for different combinations of masses and 
+initial conditions until you find a system where all three bodies start 
+within 1 AU of each other and remain bound for at least 100 years. Develop a 
+useful way to display the results. Also plot the total energy and momentum of
+your system as a function of time. What do you notice? Finally, explore 
+several different methods available in solve ivp using the method keyword.
 
 Pseudocode:
     imports
     functions:
         right hand side function:
-            6 vector equations expanded into 18 when I realized solve_ivp does
-            not like vector equations
+            6 vector equations expanded into 18 when I realized solve_ivp 
+            does not like vector equations
             6 state equations:
                 position_1 (array of size 3)
                 position_2
@@ -56,7 +57,8 @@ Pseudocode:
                 velocity_1
                 velocity_2
                 velocity_3
-            6 first order differential equations representing two coupled second order equations:
+            6 first order differential equations representing two coupled 
+            second order equations:
                 rhs_1 = velocity_1
                 rhs_2 = velocity_2
                 rhs_3 = velocity_3
@@ -160,7 +162,7 @@ def total_momentum(state):
 
 G = 4*np.pi**2 # AU^2/(year^2 * Msun)
 M1 = 1 # Solar masses
-M2 = 1
+M2 = 100
 M3 = 1
 
 t_min = 0 # years
