@@ -21,11 +21,7 @@ import astropy as ap
 
 n = 100
 
-q = 'q'
-p = 'p'
-arr = np.array((1,n))
-for i in range(n):
-    arr((0, i)) = q + str(i)
-    arr((1, i)) = p + str(i)
 
+arr = np.zeros((n,2))
+#arr[row, column]
 

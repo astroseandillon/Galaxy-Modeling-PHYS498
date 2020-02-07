@@ -29,6 +29,9 @@ class Galaxy():
         self.theta_max = theta_max
         return 
 
+    def state(position, velocity):
+        self.position[0] = x
+        
 
 
 
