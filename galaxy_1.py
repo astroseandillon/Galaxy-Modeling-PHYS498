@@ -77,8 +77,8 @@ G = 4*np.pi**2 # AU^2/(year^2 * Mgal)
 M = 1 # Solar masses
 
 # bodies; all at distance 1 AU away for now
-N = 30
-num_rings = 3
+N = 100
+num_rings = 10
 r_outer = 1
 
 # get initial position and velocity values for each star
@@ -122,7 +122,7 @@ for i in range(N):
 # it doesn't like a multideminsional init_cond array, so reshape it
 # Radau to better conserve energy
 solution = spi.solve_ivp(rhs, [t_min, t_max], np.reshape(init_cond, num_equations),
-                          vectorized = False, t_eval = times, method='Radau')
+                         t_eval = times, method='Radau')
 
 # reshape again: x is state; y is x,y,z; z steps through time
 solution['y'] = np.reshape(solution['y'], (num_equations//3, 3, Nt))
