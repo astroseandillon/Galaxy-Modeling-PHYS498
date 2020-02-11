@@ -14,6 +14,7 @@ import scipy as sp
 import matplotlib.pyplot as plt
 import matplotlib.animation as ani
 import astropy as ap
+import vorpy
 
 
 #Each point has a set of points (q, p), where q = position and 
@@ -21,7 +22,8 @@ import astropy as ap
 
 n = 100
 
+position_array = np.zeros(n)
+momentum_array = np.zeros(n)
 
-arr = np.zeros((n,2))
-#arr[row, column]
+
 
