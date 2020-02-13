@@ -132,4 +132,6 @@ def integrate (*, initial_coordinates, t_v, dK_dp, dV_dq, update_step_coefficien
                 salvaged_qp_v=np.copy(integrated_coordinates[:step_index+1,...])
             ) from e
 
-return integrated_coordinates
+    return integrated_coordinates
+
+
