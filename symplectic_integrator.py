@@ -12,14 +12,13 @@ Butchered from vorpy
 """
 import collections
 import numpy as np
-<<<<<<< HEAD
+
 import scipy as sp
 import matplotlib.pyplot as plt
 import matplotlib.animation as ani
 import astropy as ap
 import vorpy
-=======
->>>>>>> a1744d0982fdc178f0ea4396b8fd6d2e6226d5ef
+
 
 def __make_ruth4_update_step_coefficients ():
     cbrt_2 = 2.0**(1.0/3.0)
@@ -119,13 +118,13 @@ def integrate (*, initial_coordinates, t_v, dK_dp, dV_dq, update_step_coefficien
     q = current_coordinates[...,0,:]
     p = current_coordinates[...,1,:]
 
-<<<<<<< HEAD
-position_array = np.zeros(n)
-momentum_array = np.zeros(n)
+
+    position_array = np.zeros(n)
+    momentum_array = np.zeros(n)
 
 
-=======
-    # Store the initial coordinates (which current_coordinates is currently equal to).
+
+# Store the initial coordinates (which current_coordinates is currently equal to).
     integrated_coordinates[0,...] = current_coordinates
 
     for step_index,timestep in enumerate(np.diff(t_v)):
@@ -144,9 +143,9 @@ momentum_array = np.zeros(n)
                 original_exception=e,
                 salvaged_t_v=np.copy(t_v[:step_index+1]),
                 salvaged_qp_v=np.copy(integrated_coordinates[:step_index+1,...])
-            ) from e
->>>>>>> a1744d0982fdc178f0ea4396b8fd6d2e6226d5ef
-
+                ) from e
+            
+        
     return integrated_coordinates
 
 
