@@ -10,7 +10,7 @@ Create model with no class:
     points in space represent stars
     create initial conditions that spin about star
     
-Need to determine if difficulties conserving momentum are my fault of solve_ivp's fault
+Need to comment
 
 """
 
