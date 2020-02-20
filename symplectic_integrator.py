@@ -119,8 +119,8 @@ def integrate (*, initial_coordinates, t_v, dK_dp, dV_dq, update_step_coefficien
     p = current_coordinates[...,1,:]
 
 
-    position_array = np.zeros(n)
-    momentum_array = np.zeros(n)
+    position_array = np.zeros(N)
+    momentum_array = np.zeros(N)
 
 
 

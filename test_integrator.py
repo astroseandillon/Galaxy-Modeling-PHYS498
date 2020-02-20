@@ -13,95 +13,85 @@ import numpy as np
 import collections
 from symplectic_integrator import  __make_ruth4_update_step_coefficients, integrate
 import matplotlib.pyplot as plt
+from integrator_exceptions import SalvagedResultException
 
 plt.close('all')
 
-def f(x):
-    return x**4+3*x**4 + 5
-
-G = 4*np.pi**2 # AU^2/(year^2 * Msun)
-M1 = 1 # Solar masses
-M2 = 100
-M3 = 1
-
-# differential equations set up
-def rhs(time, state):
-    
-    # 18 equations: 3 2nd order * 2 for separating, * 3 for vector components
-    position_1x = state[0]
-    position_2x = state[1]
-    position_3x = state[2]
-    velocity_1x = state[3]
-    velocity_2x = state[4]
-    velocity_3x = state[5]
-    position_1y = state[6]
-    position_2y = state[7]
-    position_3y = state[8]
-    velocity_1y = state[9]
-    velocity_2y = state[10]
-    velocity_3y = state[11]
-    position_1z = state[12]
-    position_2z = state[13]
-    position_3z = state[14]
-    velocity_1z = state[15]
-    velocity_2z = state[16]
-    velocity_3z = state[17]
-    
-    position_1 = np.array([position_1x, position_1y, position_1z])
-    position_2 = np.array([position_2x, position_2y, position_2z])
-    position_3 = np.array([position_3x, position_3y, position_3z])
-    
-    # magnitudes of distances
-    r1_2 = np.sqrt(np.sum((position_2 - position_1)**2))
-    r1_3 = np.sqrt(np.sum((position_3 - position_1)**2))
-    r2_3 = np.sqrt(np.sum((position_3 - position_2)**2))
-    
-    # right hand sides
-    rhs = np.zeros(18)
-    rhs[0] = velocity_1x
-    rhs[1] = velocity_2x
-    rhs[2] = velocity_3x
-    rhs[3] = (G*M2*(position_2x - position_1x)/r1_2**3 + G*M3*(position_3x -
-       position_1x)/r1_3**3)
-    rhs[4] = (G*M3*(position_3x - position_2x)/r2_3**3 + G*M1*(position_1x -
-       position_2x)/r1_2**3)
-    rhs[5] = (G*M2*(position_2x - position_3x)/r2_3**3 + G*M1*(position_1x -
-       position_3x)/r1_3**3)
-    rhs[6] = velocity_1y
-    rhs[7] = velocity_2y
-    rhs[8] = velocity_3y
-    rhs[9] = (G*M2*(position_2y - position_1y)/r1_2**3 + G*M3*(position_3y -
-       position_1y)/r1_3**3)
-    rhs[10] = (G*M3*(position_3y - position_2y)/r2_3**3 + G*M1*(position_1y -
-       position_2y)/r1_2**3)
-    rhs[11] = (G*M2*(position_2y - position_3y)/r2_3**3 + G*M1*(position_1y -
-       position_3y)/r1_3**3)
-    rhs[12] = velocity_1z
-    rhs[13] = velocity_2z
-    rhs[14] = velocity_3z
-    rhs[15] = (G*M2*(position_2z - position_1z)/r1_2**3 + G*M3*(position_3z -
-       position_1z)/r1_3**3)
-    rhs[16] = (G*M3*(position_3z - position_2z)/r2_3**3 + G*M1*(position_1z -
-       position_2z)/r1_2**3)
-    rhs[17] = (G*M2*(position_2z - position_3z)/r2_3**3 + G*M1*(position_1z -
-       position_3z)/r1_3**3)
-    return rhs
 
 
-
-
-
-
-
-
-N = 100
-a = 0.0
-b = 20.0
+N=3
 dt = 0.02
 t_v = np.arange(0.0, 30.0, dt)
-base_shape = (2,N)
-base_qp_0 = np.zeros(base_shape, dtype=float)
-base_qp_0[0,0] = np.pi/2.0
+qp_0 = np.zeros((2,N), dtype=float)
+qp_0[0,0] = np.pi/2.0
+
+
+
+
+
+def V (q):
+        """Potential energy is a function of the position only."""
+        # np.linalg.norm(q) gives the angle from the vertical axis
+        return -np.cos(np.linalg.norm(q))
+
+def K (p):
+        """Kinetic energy is a function of the momentum only.  It is assumed that the pendulum has unit mass."""
+        return 0.5*np.sum(np.square(p))
+
+def H (coordinates):
+        """The Hamiltonian is the sum of kinetic and potential energy."""
+        q = coordinates[0,:]
+        p = coordinates[1,:]
+        return K(p) + V(q)
+
+def dK_dp (p):
+        return p
+
+def dV_dq (q):
+    # sinc(x) is sin(pi*x)/(pi*x) when x is not 0 -- this is used to avoid the singularity in sin(x)/x.
+    return -np.sinc(np.linalg.norm(q)/np.pi) * q
+
+def dH_dq (q, p):
+    return dV_dq(q)
+
+def dH_dp (q, p):
+    return p
+
+UpdateStepCoefficients = collections.namedtuple('UpdateStepCoefficients', ['euler1', 'verlet2', 'ruth3', 'ruth4'])
+update_step_coefficients = UpdateStepCoefficients(
+    # euler1
+    np.array([
+        [1.0],
+        [1.0]
+    ]),
+    # verlet2
+    np.array([
+        [0.0, 1.0],
+        [0.5, 0.5]
+    ]),
+    # ruth3
+    np.array([
+        [1.0, -2.0/3.0, 2.0/3.0],
+        [-1.0/24.0, 0.75, 7.0/24.0]
+    ]),
+    # ruth4
+    __make_ruth4_update_step_coefficients()
+)
+
+
+integrate(
+        initial_coordinates=qp_0,
+        t_v=t_v,
+        dK_dp=dK_dp(qp_0[1,:]),
+        dV_dq = dV_dq(qp_0[0,:]),
+        update_step_coefficients=update_step_coefficients.verlet2)
+
+
+
+
+
+
+
 
 
 
