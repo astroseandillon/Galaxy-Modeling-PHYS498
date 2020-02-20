@@ -23,12 +23,21 @@ plt.close('all')
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 2032569321d26a74bc238bf0599ba55fc0bdccda
 # =============================================================================
 # Functions
 # =============================================================================
 
+<<<<<<< HEAD
 >>>>>>> 861f36128d4b00f6bd95d6b694bbe9eef0a07e10
+=======
+=======
+<<<<<<< HEAD
+>>>>>>> daa69fd5f9a0a5502c8216acb411d3d1e2f9d189
+>>>>>>> 2032569321d26a74bc238bf0599ba55fc0bdccda
 def rhs(time, state):
     
     # reshape state
@@ -52,6 +61,11 @@ def rhs(time, state):
         rhs[2*i+3] = G*M*(state[0] - state[2*i+2])/r_array[i]**3
     
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+    return np.reshape(rhs, num_equations)
+=======
+>>>>>>> 2032569321d26a74bc238bf0599ba55fc0bdccda
     return np.reshape(rhs, 12)
 =======
 # =============================================================================
@@ -82,9 +96,13 @@ def rhs(time, state):
     
     return np.reshape(rhs, num_equations)
 >>>>>>> b3776d6188a3214e2a9d30b7b13a9f82ff159fc9
+<<<<<<< HEAD
 =======
     return np.reshape(rhs, num_equations)
 >>>>>>> 861f36128d4b00f6bd95d6b694bbe9eef0a07e10
+=======
+>>>>>>> daa69fd5f9a0a5502c8216acb411d3d1e2f9d189
+>>>>>>> 2032569321d26a74bc238bf0599ba55fc0bdccda
 
 # initialization function for animation
 def init_animate():
@@ -98,11 +116,20 @@ def animate(i):
     # scaling speeds up the animation
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     scaling = 10
     i*=scaling
 =======
     i*=animation_speed_scaling
 >>>>>>> 861f36128d4b00f6bd95d6b694bbe9eef0a07e10
+=======
+    i*=animation_speed_scaling
+=======
+<<<<<<< HEAD
+    scaling = 10
+    i*=scaling
+>>>>>>> daa69fd5f9a0a5502c8216acb411d3d1e2f9d189
+>>>>>>> 2032569321d26a74bc238bf0599ba55fc0bdccda
     # plot the trajectories at given frame
     x = np.zeros(N)
     y = np.zeros(N)
@@ -165,6 +192,18 @@ num_equations = (N+1)*6 # total number of equations tobe solved in solve_ivp
 init_cond = np.zeros((num_equations//3, 3))
 init_cond[0] = [0, 0, 0]
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+init_cond[1] = [1, 0, 0]
+# build points in a circle (x and y are sin and cos)
+index = 0
+for i in range(num_rings):
+    for j in range(N_per_ring[i]):
+        init_cond[2*index+2] = [r_array[index]*np.sin(j/N_per_ring[i]*2*np.pi), r_array[index]*np.cos(j/N_per_ring[i]*2*np.pi), 0] + init_cond[0]
+        init_cond[2*index+3] = [v_array[index]*np.cos(j/N_per_ring[i]*2*np.pi), -v_array[index]*np.sin(j/N_per_ring[i]*2*np.pi), 0] + init_cond[1]
+        index += 1
+=======
+>>>>>>> 2032569321d26a74bc238bf0599ba55fc0bdccda
 init_cond[1] = [0, 0, 0]
 init_cond[2] = [0, -1, 0]
 # for circular orbit: v = (GMr)^0.5
@@ -227,6 +266,7 @@ init_cond[1] = [0, 0, 0]
 for i in range(N):
     init_cond[2*i+2] = [r_array[i]*np.sin(i/N_per_ring*2*np.pi), r_array[i]*np.cos(i/N_per_ring*2*np.pi), 0]
     init_cond[2*i+3] = [v_array[i]*np.cos(i/N_per_ring*2*np.pi), -v_array[i]*np.sin(i/N_per_ring*2*np.pi), 0]
+<<<<<<< HEAD
 =======
 init_cond[1] = [1, 0, 0]
 # build points in a circle (x and y are sin and cos)
@@ -237,19 +277,36 @@ for i in range(num_rings):
         init_cond[2*index+3] = [v_array[index]*np.cos(j/N_per_ring[i]*2*np.pi), -v_array[index]*np.sin(j/N_per_ring[i]*2*np.pi), 0] + init_cond[1]
         index += 1
 >>>>>>> 861f36128d4b00f6bd95d6b694bbe9eef0a07e10
+=======
+>>>>>>> daa69fd5f9a0a5502c8216acb411d3d1e2f9d189
+>>>>>>> 2032569321d26a74bc238bf0599ba55fc0bdccda
 
 # =============================================================================
 # Solution
 # =============================================================================
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> b3776d6188a3214e2a9d30b7b13a9f82ff159fc9
 =======
 >>>>>>> 861f36128d4b00f6bd95d6b694bbe9eef0a07e10
+=======
+=======
+>>>>>>> b3776d6188a3214e2a9d30b7b13a9f82ff159fc9
+>>>>>>> daa69fd5f9a0a5502c8216acb411d3d1e2f9d189
+>>>>>>> 2032569321d26a74bc238bf0599ba55fc0bdccda
 
 # solve_ivp yay
 # it doesn't like a multideminsional init_cond array, so reshape it
 # Radau to better conserve energy
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+solution = spi.solve_ivp(rhs, [t_min, t_max], np.reshape(init_cond, num_equations),
+                         t_eval = times, method='Radau')
+
+# reshape again: x is state; y is x,y,z; z steps through time
+=======
+>>>>>>> 2032569321d26a74bc238bf0599ba55fc0bdccda
 <<<<<<< HEAD
 solution = spi.solve_ivp(rhs, [t_min, t_max], np.reshape(init_cond, 12),
                           vectorized = False, t_eval = times, method='Radau')
@@ -261,18 +318,38 @@ solution = spi.solve_ivp(rhs, [t_min, t_max], np.reshape(init_cond, num_equation
                          t_eval = times, method='Radau')
 
 # reshape again: x is state; y is x,y,z; z steps through time
+<<<<<<< HEAD
 =======
 solution = spi.solve_ivp(rhs, [t_min, t_max], np.reshape(init_cond, num_equations),
                          t_eval = times, method='Radau')
 
 # reshape again: x is state; y is x,y,z; z steps through time
 >>>>>>> 861f36128d4b00f6bd95d6b694bbe9eef0a07e10
+=======
+>>>>>>> daa69fd5f9a0a5502c8216acb411d3d1e2f9d189
+>>>>>>> 2032569321d26a74bc238bf0599ba55fc0bdccda
 solution['y'] = np.reshape(solution['y'], (num_equations//3, 3, Nt))
 
 # =============================================================================
 # Plotting
 # =============================================================================
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+fig = plt.figure()
+# initialize points to represent bodies and text to be animated
+cent_bodies, = [plt.plot([], [], 'ok')] # central bodies
+point_bodies, = [plt.plot([], [], '.k')] # point bodies
+time_text = [plt.text(0.15, 0.15, '', transform=plt.gcf().transFigure)]
+patches = cent_bodies + point_bodies + time_text
+# animate
+ani = ani.FuncAnimation(fig, animate, init_func=init_animate, frames=1000,
+                        interval=10, blit=True)
+plt.xlim(-1.1, 2.1)
+plt.ylim(-1.1, 1.1)
+=======
+>>>>>>> 2032569321d26a74bc238bf0599ba55fc0bdccda
 >>>>>>> b3776d6188a3214e2a9d30b7b13a9f82ff159fc9
 
 fig = plt.figure()
@@ -297,6 +374,7 @@ ani = ani.FuncAnimation(fig, animate, init_func=init_animate, frames=1000,
 plt.xlim(-1.1, 1.1)
 plt.ylim(-1.1, 1.1)
 >>>>>>> b3776d6188a3214e2a9d30b7b13a9f82ff159fc9
+<<<<<<< HEAD
 =======
 
 fig = plt.figure()
@@ -311,4 +389,7 @@ ani = ani.FuncAnimation(fig, animate, init_func=init_animate, frames=1000,
 plt.xlim(-1.1, 2.1)
 plt.ylim(-1.1, 1.1)
 >>>>>>> 861f36128d4b00f6bd95d6b694bbe9eef0a07e10
+=======
+>>>>>>> daa69fd5f9a0a5502c8216acb411d3d1e2f9d189
+>>>>>>> 2032569321d26a74bc238bf0599ba55fc0bdccda
 
