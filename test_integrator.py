@@ -19,7 +19,7 @@ plt.close('all')
 
 
 
-N=3
+N=2
 dt = 0.02
 t_v = np.arange(0.0, 30.0, dt)
 qp_0 = np.zeros((2,N), dtype=float)
