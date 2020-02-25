@@ -13,7 +13,7 @@ import numpy as np
 import collections
 from symplectic_integrator import  __make_ruth4_update_step_coefficients, integrate
 import matplotlib.pyplot as plt
-from integrator_exceptions import SalvagedResultException
+from integrator_exceptions import SalvagedResultException as exceptions
 
 plt.close('all')
 
@@ -79,7 +79,7 @@ update_step_coefficients = UpdateStepCoefficients(
 )
 
 
-integrate(
+a = integrate(
         initial_coordinates=qp_0,
         t_v=t_v,
         dK_dp=dK_dp(qp_0[1,:]),

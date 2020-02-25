@@ -122,8 +122,9 @@ def integrate (*, initial_coordinates, t_v, dK_dp, dV_dq, update_step_coefficien
     position_array = np.zeros(N)
     momentum_array = np.zeros(N)
 
+    return integrated_coordinates
 
-
+'''
 # Store the initial coordinates (which current_coordinates is currently equal to).
     integrated_coordinates[0,...] = current_coordinates
 
@@ -145,7 +146,7 @@ def integrate (*, initial_coordinates, t_v, dK_dp, dV_dq, update_step_coefficien
                 salvaged_qp_v=np.copy(integrated_coordinates[:step_index+1,...])
                 ) from e
             
-        
-    return integrated_coordinates
+'''        
+
 
 
