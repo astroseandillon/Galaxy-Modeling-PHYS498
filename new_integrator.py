@@ -86,7 +86,7 @@ def first_order_equation(t, M):
 
 
 
-testfun = first_order_equation(timestep, 45.0)
+testfun = first_order_equation(timestep, 1.0)
 
 
 
