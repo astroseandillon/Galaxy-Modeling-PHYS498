@@ -64,14 +64,29 @@ fourth_order= np.array([[c14, c_2_4, c_2_4, c14],
                         [d_1_4, d_2_4, d_1_4, d_4_4]])
 
 
+timestep = np.arange(0, 100, 0.1)
+
+
+
+    
+
 
 
    
-        
+def first_order_equation(t, M):
+    q = np.zeros(1000)
+    p = np.zeros(1000)
+    p[0] = np.pi/2
+    q[0] = 10
+    for i in range(len(t)-1):
+        q[i+1] = q[i] + first_order[0]*p[i+1]*t[i]/M
+        p[i+1] = p[i] + first_order[1]*M*t[i]*p[i]*p[i]/q[i]
+    z = np.array((q, p))
+    return z
 
 
 
-
+testfun = first_order_equation(timestep, 45.0)
 
 
 
