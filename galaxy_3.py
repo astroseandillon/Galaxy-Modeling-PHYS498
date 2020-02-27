@@ -7,13 +7,14 @@ Created on Tue Feb  4 10:05:02 2020
 
 TO DO:
     CLEAN UP CODE
-    Make time output better
-    Fix animation saving
+    Classes/Numba/Decorators for function time-output
+    *Fix animation saving
     Symplectic integrator
     Allow for unequal galaxies
     Adaptive timesteps?
     Try other initial conditions
     Make it a true N-body code
+    Energy analysis
 """
 
 import matplotlib.animation as ani
@@ -112,8 +113,8 @@ def rhs_2_body(time, state):
 # This is a crude attempt to keep track of how the solver is progressing
 def PrintTime(time):
     global t_count
-    if t_count % t_interval == 0:
-        print(str(int(time)) + "/" + str(t_max) + " years calculated")
+    if t_count % Nt == 0:
+        print(str(np.round(time, 2)) + "/" + str(t_max) + " years calculated")
     t_count += 1
 
 # set up initial conditions
@@ -194,10 +195,10 @@ galaxy_pos = np.array([[0, 0, 0], [5, 5, 0]])
 galaxy_vel = np.array([[1.5, 0, 0], [-1.5, 0, 0]])
 
 # rings of bodies with more on the edges
-r_outer = 1.5 # radius of galaxy
+r_outer = 1 # radius of galaxy
 N_inner_ring = 5 # number of bodies on innermost ring
-N_outer_ring = 15 # number of bodies on outermost ring
-num_rings = 3
+N_outer_ring = 10 # number of bodies on outermost ring
+num_rings = 2
 # number of bodies on intermediate rings will be linear to the edges
 N_per_ring = np.linspace(N_outer_ring, N_inner_ring, num_rings, dtype = int)
 N = np.sum(N_per_ring) # calculate N
@@ -206,15 +207,16 @@ N_total = N*num_galaxies # number of point bodies total
 # times
 t_min = 0 # years
 t_max = 1 # years
-Nt = 2000 # number of timesteps (consider defining dt?)
+Nt = 1000 # number of timesteps (consider defining dt?)
 t_interval = Nt//t_max # number of timesteps in one year
-t_count = 0 # for use in outputting time data during solve_ivp runtime
+t_count = 0 # Used in outputting time data during runtime
 times = np.linspace(t_min, t_max, Nt)
 
 # other parameters
 check_N = True # output number of Ns before running
 animation_speed_scaling = 10 # increase for faster animation
-save_animation = False # do not check unless ffmpeg is installed
+save_animation = False # animation saving is still broken
+animation_writer = 'imagemagick' # use either this or ffmpeg, whichever is installed
 animation_dir = "animations" # save animations to this directory
 # if create custom name, do not start with 'ani'
 animation_file_name = '' # leave blank to automatically create file name
@@ -265,22 +267,6 @@ solution['y'] = np.reshape(solution['y'], (num_equations//3, 3, Nt))
 # Plotting
 # =============================================================================
 
-# this section still needs commenting/optimizing
-if save_animation:
-    Writer = ani.writers['ffmpeg']
-    writer = Writer(fps=15, metadata=dict(artist='Chico_Astro'), bitrate=1800)
-    if animation_file_name != '':
-        files = ([f for f in os.listdir(animation_dir)
-                 if os.path.isfile(os.path.join(animation_dir, f))])
-        file_num = np.zeros(len(files))
-        for file in files:
-            if file[:3] == 'ani':
-                extension = int(file[3:-4])
-        if len(files) == 0:
-            animation_file_name = 'ani1.mp4'
-        else:
-            animation_file_name = 'ani' + str(np.max(extension) + 1) + '.mp4'
-
 fig = plt.figure()
 # initialize points to represent bodies and text to be animated
 # central bodies
@@ -298,8 +284,25 @@ patches = cent_bodies + point_bodies + time_text
 animation = ani.FuncAnimation(fig, animate, init_func=init_animate,
                               frames=Nt//animation_speed_scaling,
                               interval=10, blit=True)
+# Save animation
 if save_animation:
-    animation.save(animation_dir + '/' + animation_file_name)
+    # create new animation file name, if one does not exist already
+    if animation_file_name == '':
+        files = ([f for f in os.listdir(animation_dir)
+                 if os.path.isfile(os.path.join(animation_dir, f))])
+        file_num = np.zeros(len(files))
+        for file in files:
+            if file[:3] == 'ani':
+                extension = int(file[3:-4])
+        if len(files) == 0:
+            animation_file_name = 'ani1.mp4'
+        else:
+            animation_file_name = 'ani' + str(np.max(extension) + 1) + '.mp4'
+    # save animation using imagemagick
+    # currently horribly broken but it's trying its best
+    animation.save(animation_dir + '/' + animation_file_name,
+                   writer=animation_writer, fps=15, bitrate=1800,
+                   metadata=dict(artist='Chico_Astro'))
 plt.xlim(-8.1, 13.1)
 plt.ylim(-7.1, 11.1)
 
