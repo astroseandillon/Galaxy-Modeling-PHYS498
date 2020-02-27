@@ -33,12 +33,14 @@ z(tau) = exp(tau D_h)z(0)
 D_h dot = {dot, H}
 
 
-
+very good at conserving energy
 
 
 
 """
 import numpy as np
+import matplotlib.pyplot as plt
+plt.close('all')
 
 
 c14 = 1/(2*(2-(2**(1/3))))
@@ -68,25 +70,33 @@ timestep = np.arange(0, 100, 0.1)
 
 
 
-    
+def V(q):
+    """
+    POTENTIAL ENERGY
+    """
+    return -np.cos(np.linalg.norm(q))
 
-
+def T(p):
+    """
+    KINETIC ENERGY
+    """
+    return 0.5*np.sum(p**2)
 
    
-def first_order_equation(t, M):
-    q = np.zeros(1000)
-    p = np.zeros(1000)
-    p[0] = np.pi/2
-    q[0] = 10
+def first_order_equation(t, M, q0, p0):
+    q = np.zeros(len(t))
+    p = np.zeros(len(t))
+    dt = t[1] - t[0]
+    p[0] = p0
+    q[0] = q0
     for i in range(len(t)-1):
-        q[i+1] = q[i] + first_order[0]*p[i+1]*t[i]/M
-        p[i+1] = p[i] + first_order[1]*M*t[i]*p[i]*p[i]/q[i]
+        p[i+1] = p[i] - dt*V(q[i])
+        q[i+1] = q[i] + dt*T(p[i+1])
     z = np.array((q, p))
     return z
 
 
 
-testfun = first_order_equation(timestep, 1.0)
 
 
 
@@ -97,6 +107,21 @@ testfun = first_order_equation(timestep, 1.0)
 
 
 
+
+
+
+
+
+
+testfun = first_order_equation(timestep, 1.0, np.pi/2, 0.5)
+
+
+x = testfun[0,:]
+y = testfun[1,:]
+
+plt.figure()
+plt.scatter(x, y)
+plt.show()
 
 
 
