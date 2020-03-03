@@ -6,9 +6,8 @@ Created on Tue Feb  4 10:05:02 2020
 @author: blarsen10
 
 TO DO:
-    CLEAN UP CODE
+    Merge with Cindy's code
     Classes/Numba/Decorators for function time-output
-    *Fix animation saving
     Symplectic integrator
     Allow for unequal galaxies
     Adaptive timesteps?
@@ -16,7 +15,6 @@ TO DO:
     Make it a true N-body code
     Energy analysis
 """
-
 import matplotlib.animation as ani
 import matplotlib.pyplot as plt
 import numpy as np
@@ -141,6 +139,25 @@ def initial_conditions():
                 i_rv += 1
     return init_cond
 
+def SaveAnimation(file_name, writer, fps=60, bitrate=-1):
+    print('Saving animation')
+    # create new animation file name, if one does not exist already
+    if file_name == '':
+        files = np.asarray([f for f in os.listdir(animation_dir)
+                 if os.path.isfile(os.path.join(animation_dir, f))])
+        if np.any(files == '_ani1.gif'):
+            extension = 1
+            for file in files:
+                if file[:4] == '_ani' and int(file[4:-4]) > extension:
+                    extension = int(file[4:-4])
+            file_name = '_ani' + str(np.max(extension) + 1) + '.gif'
+        else:
+            file_name = '_ani1.gif'
+    # save animation as gif using imagemagick
+    animation.save(animation_dir + '/' + file_name,
+                   writer=writer, fps=fps, bitrate=bitrate,
+                   metadata=dict(artist='Chico_Astro'))
+
 # initialization function for animation
 def init_animate():
     for i in range(num_galaxies):
@@ -213,13 +230,15 @@ t_count = 0 # Used in outputting time data during runtime
 times = np.linspace(t_min, t_max, Nt)
 
 # other parameters
-check_N = True # output number of Ns before running
+check_N = False # output number of Ns before running
 animation_speed_scaling = 10 # increase for faster animation
-save_animation = False # animation saving is still broken
+save_animation = True # animation saving is still broken
 animation_writer = 'imagemagick' # use either this or ffmpeg, whichever is installed
 animation_dir = "animations" # save animations to this directory
-# if create custom name, do not start with 'ani'
-animation_file_name = '' # leave blank to automatically create file name
+# create custom gif file name
+# leave blank to automatically create file name
+# do not start with 'ani' to avoid confusing my dumb program
+animation_file_name = ''
 # total number of equations tobe solved in solve_ivp
 num_equations = ((N*num_galaxies)+num_galaxies)*6
 
@@ -261,6 +280,7 @@ solution = spi.solve_ivp(rhs, [t_min, t_max], np.reshape(init_cond, num_equation
                          t_eval = times, method='Radau')
 
 # reshape again: x is state; y is x,y,z; z steps through time
+print('Begin time evolution')
 solution['y'] = np.reshape(solution['y'], (num_equations//3, 3, Nt))
 
 # =============================================================================
@@ -286,23 +306,7 @@ animation = ani.FuncAnimation(fig, animate, init_func=init_animate,
                               interval=10, blit=True)
 # Save animation
 if save_animation:
-    # create new animation file name, if one does not exist already
-    if animation_file_name == '':
-        files = ([f for f in os.listdir(animation_dir)
-                 if os.path.isfile(os.path.join(animation_dir, f))])
-        file_num = np.zeros(len(files))
-        for file in files:
-            if file[:3] == 'ani':
-                extension = int(file[3:-4])
-        if len(files) == 0:
-            animation_file_name = 'ani1.mp4'
-        else:
-            animation_file_name = 'ani' + str(np.max(extension) + 1) + '.mp4'
-    # save animation using imagemagick
-    # currently horribly broken but it's trying its best
-    animation.save(animation_dir + '/' + animation_file_name,
-                   writer=animation_writer, fps=15, bitrate=1800,
-                   metadata=dict(artist='Chico_Astro'))
+    SaveAnimation(animation_file_name, animation_writer, fps = 60, bitrate = -1)
 plt.xlim(-8.1, 13.1)
 plt.ylim(-7.1, 11.1)
 
