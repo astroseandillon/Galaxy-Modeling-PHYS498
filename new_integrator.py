@@ -96,31 +96,47 @@ def first_order_equation(t, M, q0, p0):
     return z
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+def fourth_order_equation(t, M, q0, p0):
+    q = np.zeros(len(t))
+    p = np.zeros(len(t))
+    dt = t[1] - t[0]
+    p[0] = p0
+    q[0] = q0
+    c = 0
+    for i in range(len(t)-1):
+        if c == 0:
+            p[i+1] = p[i] - dt*V(q[i])*fourth_order[0,c]
+            q[i+1] = q[i] + dt*T(p[i+1])*fourth_order[1,c]
+            c += 1
+        elif c == 1:
+            p[i+1] = p[i] - dt*V(q[i])*fourth_order[0,c]
+            q[i+1] = q[i] + dt*T(p[i+1])*fourth_order[1,c]
+            c += 1
+        elif c == 2:
+            p[i+1] = p[i] - dt*V(q[i])*fourth_order[0,c]
+            q[i+1] = q[i] + dt*T(p[i+1])*fourth_order[1,c]
+            c += 1
+        elif c == 3:
+            p[i+1] = p[i] - dt*V(q[i])*fourth_order[0,c]
+            q[i+1] = q[i] + dt*T(p[i+1])*fourth_order[1,c]
+            c = 0
+    z = np.array((q, p))
+    return z
 
 
 testfun = first_order_equation(timestep, 1.0, np.pi/2, 0.5)
-
+new_integrator = fourth_order_equation(timestep, 1.0, np.pi/2, 0.5)
 
 x = testfun[0,:]
 y = testfun[1,:]
 
+new_x = new_integrator[0,:]
+new_y = new_integrator[1,:]
+
+
 plt.figure()
-plt.scatter(x, y)
+#plt.scatter(x, y)
+plt.scatter(new_x, new_y)
 plt.show()
 
 
