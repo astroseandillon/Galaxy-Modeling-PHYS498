@@ -75,7 +75,7 @@ def V(q):
     POTENTIAL ENERGY 
     q = theta
     """
-    g = 9.8 #m/s**2
+    g = -9.8 #m/s**2
     L = 1 #m
     v = g/L * (1 - np.cos(q))
     return v
@@ -147,15 +147,15 @@ new_x = new_integrator[0,:]
 new_y = new_integrator[1,:]
 
 h = H(new_integrator)
-
-#showing the difference between the first order and fourth order integration
-#schemes
+h1 = H(testfun)
+#showing the difference between the first order and fourth order integration schemes
 plt.figure()
-plt.scatter(timestep, x, label="first order")
-plt.scatter(timestep, new_x, label="fourth order")
+#plt.plot(timestep, x, label="first order")
+plt.plot(timestep, new_x, label="fourth order")
 plt.title("Symplectic Integrator Test")
 plt.ylabel("Position")
 plt.xlabel("Time")
+#plt.ylim(-1000,140000)
 plt.legend()
 
 
@@ -167,11 +167,12 @@ plt.legend()
 
 #hamiltonian vs time
 plt.figure()
-plt.plot(timestep, h)
+#plt.plot(timestep, h1, label="first order")
+plt.plot(timestep, h, label="fourth order")
 plt.title("Hamiltonian vs. Time")
 plt.xlabel('time')
 plt.ylabel("Hamiltonian")
-
+plt.legend()
 '''
 plt.figure()
 plt.plot(H(new_integrator))
