@@ -74,13 +74,21 @@ def V(q):
     """
     POTENTIAL ENERGY
     """
-    return -np.cos(np.linalg.norm(q))
+    return -np.cos(q)
 
 def T(p):
     """
     KINETIC ENERGY
     """
-    return 0.5*np.sum(p**2)
+    return p
+
+
+
+def H(coordinates):
+        """The Hamiltonian is the sum of kinetic and potential energy."""
+        q = coordinates[0,:]
+        p = coordinates[1,:]
+        return T(p) + V(q)
 
    
 def first_order_equation(t, M, q0, p0):
@@ -125,7 +133,7 @@ def fourth_order_equation(t, M, q0, p0):
 
 
 testfun = first_order_equation(timestep, 1.0, np.pi/2, 0.5)
-new_integrator = fourth_order_equation(timestep, 1.0, np.pi/2, 0.5)
+new_integrator = fourth_order_equation(timestep, 1.0, np.pi/20, 0.5)
 
 x = testfun[0,:]
 y = testfun[1,:]
@@ -134,9 +142,22 @@ new_x = new_integrator[0,:]
 new_y = new_integrator[1,:]
 
 
+
 plt.figure()
-#plt.scatter(x, y)
-plt.scatter(new_x, new_y)
+plt.scatter(timestep, x, label="first order")
+plt.scatter(timestep, new_x, label="fourth order")
+plt.title("Symplectic Integrator Test")
+plt.ylabel("Position")
+plt.xlabel("Time")
+plt.legend()
+
+plt.figure()
+plt.plot(timestep, H(new_integrator))
+plt.title("conservation of energy i think")
+plt.xlabel('time')
+plt.ylabel("hamiltonian")
+
+
 plt.show()
 
 
