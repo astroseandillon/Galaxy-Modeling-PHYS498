@@ -72,15 +72,20 @@ timestep = np.arange(0, 100, 0.1)
 
 def V(q):
     """
-    POTENTIAL ENERGY
+    POTENTIAL ENERGY 
+    q = theta
     """
-    return -np.cos(q)
+    g = 9.8 #m/s**2
+    L = 1 #m
+    v = g/L * (1 - np.cos(q))
+    return v
 
 def T(p):
     """
     KINETIC ENERGY
+    p = theta_dot
     """
-    return p
+    return (p**2)/2
 
 
 
@@ -133,7 +138,7 @@ def fourth_order_equation(t, M, q0, p0):
 
 
 testfun = first_order_equation(timestep, 1.0, np.pi/2, 0.5)
-new_integrator = fourth_order_equation(timestep, 1.0, np.pi/20, 0.5)
+new_integrator = fourth_order_equation(timestep, 1.0, np.pi/20, 0.1)
 
 x = testfun[0,:]
 y = testfun[1,:]
@@ -141,8 +146,10 @@ y = testfun[1,:]
 new_x = new_integrator[0,:]
 new_y = new_integrator[1,:]
 
+h = H(new_integrator)
 
-
+#showing the difference between the first order and fourth order integration
+#schemes
 plt.figure()
 plt.scatter(timestep, x, label="first order")
 plt.scatter(timestep, new_x, label="fourth order")
@@ -151,11 +158,25 @@ plt.ylabel("Position")
 plt.xlabel("Time")
 plt.legend()
 
+
+
+
+
+
+
+
+#hamiltonian vs time
 plt.figure()
-plt.plot(timestep, H(new_integrator))
-plt.title("conservation of energy i think")
+plt.plot(timestep, h)
+plt.title("Hamiltonian vs. Time")
 plt.xlabel('time')
-plt.ylabel("hamiltonian")
+plt.ylabel("Hamiltonian")
+
+'''
+plt.figure()
+plt.plot(H(new_integrator))
+'''
+
 
 
 plt.show()
