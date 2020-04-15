@@ -4,14 +4,16 @@ Created on Tue Feb 25 10:28:49 2020
 
 @author: Cindy, Bjorn
 
-Need to fix runtime
-Need to add parameter to tilt the galaxies in the z direction
-How to run the animation again without having to restart the whole prpgram?
+Added histograms
+Changed initial direction for galaxy rotation
 
-numpy save z on the solution and initial conditions
+Need to figure out why rhs_2_body takes so long to run every time
+    investigate by running on my computer vs the 123 computer
+Need to adapt the right hand side function in main to work with the integrator function
+Need to save the solution from main and the initial conditions used
 """
 
-import main2 as main # rename as needed
+import main3 as main # rename as needed
 import matplotlib.animation as ani
 import matplotlib.pyplot as plt
 import numpy as np
@@ -35,17 +37,35 @@ plt.close('all')
 
 x_spacing = 0.1
 y_spacing = 0.1
-animation_speed_scaling = 2
-save_animation = True
+animation_speed_scaling = 1
+save_animation = False
 animation_writer = 'imagemagick'
 animation_dir = 'animations' # make this folder if it doesn't exist already
 animation_file_name = ''
+histograms = False
 
 # I am having the animate function call main so all work done toying with
 # parameters and initial conditions can be done just in this file
-solution, num_galaxies = main.main(num_galaxies=2, galaxy_pos=np.array([[0,0,0],[0,3,0]]),
-                                   galaxy_vel=np.array([[2,2,0],[-2,-2,0]]),
-                                   t_max=2.0, nt=1001, num_rings=5)
+
+# some fun examples below
+# rotated galaxy; euler angles in radians
+solution, num_galaxies = main.main(num_galaxies=1, galaxy_pos=np.array([[-10,-2,0]]),
+                                   galaxy_vel=np.array([[0,0,0]]), euler_angles=np.array([[1.47,0.1,0.3]]),
+                                   t_max=1.0, nt=1001, num_rings=5, check_n=True)
+'''
+# multiple galaxies at different rotations with no gravity
+# also not sure why this is taking long time to run? not much is going on here
+solution, num_galaxies = main.main(num_galaxies=2, galaxy_pos=np.array([[-1,0,0],[1,0,0]]),
+                                   galaxy_vel=np.array([[0,0,0],[0,0,0]]),
+                                   euler_angles=np.array([[1.47,0.1,0.3],[np.pi/2,-0.3,0]]),
+                                   t_max=0.1, nt=201, num_rings=3, check_n=True, grav_gal=0)
+# galaxy merger with galactic discs in the yz plane
+solution, num_galaxies = main.main(num_galaxies=2, galaxy_pos=np.array([[-2,-5,0],[2,5,0]]),
+                                   galaxy_vel=np.array([[0,3,0],[0,-3,0]]),
+                                   euler_angles=np.array([[0,np.pi/2,0],[0,np.pi/2,0]]),
+                                   t_max=5, nt=2001, r_outer=2, num_rings=1,
+                                   check_n=True)
+'''
 
 
 
@@ -155,16 +175,17 @@ plt.show()
 '''
 WIP
 '''
-# histogram of velocity distributions with respect to center of mass for each galaxy
-v_cent, v, v_com = main.velocities(num_galaxies, n_total, nt, solution)
-
-num_bins = n_total//4
-plt.figure()
-plt.title("velocity distribution before merger")
-plt.xlabel('velocities (AU/year)')
-plt.hist(v_com[:,0],num_bins)
-
-plt.figure()
-plt.title("velocity distribution after merger")
-plt.xlabel('velocities (AU/year)')
-plt.hist(v_com[:,-1],num_bins) 
+if histograms:
+    # histogram of velocity distributions with respect to center of mass for each galaxy
+    v_cent, v, v_com = main.velocities(num_galaxies, n_total, nt, solution)
+    
+    num_bins = n_total//4
+    plt.figure()
+    plt.title("velocity distribution before merger")
+    plt.xlabel('velocities (AU/year)')
+    plt.hist(v_com[:,0],num_bins)
+    
+    plt.figure()
+    plt.title("velocity distribution after merger")
+    plt.xlabel('velocities (AU/year)')
+    plt.hist(v_com[:,-1],num_bins)

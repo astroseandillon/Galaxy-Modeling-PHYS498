@@ -18,6 +18,7 @@ animate.py takes the parameters above and creates an animation
 
 import numpy as np
 import scipy.integrate as spi
+import scipy.linalg as spl
 import random
 
 # =============================================================================
@@ -31,6 +32,10 @@ Parameters:
         num_galaxies
         galaxy_pos ; initial position, array of shape (num_galaxies, 3)
         galaxy_vel ; initial velocity, array of shape (num_galaxies, 3)
+        euler_angles ; Angles with which to rotate the galactic disc (size 3):
+            1st val: angle with respect to x-axis (radians)
+            2nd val: angle with respect to y-axis (radians)
+            3rd val: angle with respect to z-axis (radians)
     Surrounding point body parameters:
         r_outer ; radius of galaxy/outermost ring
         n_inner ; number of bodies on innermost ring
@@ -42,10 +47,12 @@ Parameters:
         nt ; number of timesteps
     Other parameters:
         check_n ; set true to output n before running
+        grav_gal ; set 0 for no mutual gravitation between galaxies (default 1)
 '''
-def main(g=4*np.pi**2, m=1, num_galaxies=1, galaxy_pos=np.array([[0, 0, 0]]),
-         galaxy_vel=np.array([[0, 0, 0]]), r_outer=1, n_inner=12, n_outer=36,
-         num_rings=5, t_min=0, t_max=1, nt=1000, check_n=True):
+def main(g=4*np.pi**2, m=1, num_galaxies=1, galaxy_pos=np.array([[0,0,0]]),
+         galaxy_vel=np.array([[0,0,0]]), euler_angles=np.array([[0,0,0]]),
+         r_outer=1, n_inner=12, n_outer=36, num_rings=5, t_min=0, t_max=1,
+         nt=1000, check_n=True, grav_gal=1):
 
     def rhs_1_body(time, state):
         
@@ -108,10 +115,10 @@ def main(g=4*np.pi**2, m=1, num_galaxies=1, galaxy_pos=np.array([[0, 0, 0]]),
         rhs = np.zeros((num_equations//3, 3))
         # central body 1
         rhs[0] = state[1]
-        rhs[1] = g*m*(state[2] - state[0])/r_cent**3
+        rhs[1] = grav_gal*g*m*(state[2] - state[0])/r_cent**3
         # central body 2
         rhs[2] = state[3]
-        rhs[3] = g*m*(state[0] - state[2])/r_cent**3
+        rhs[3] = grav_gal*g*m*(state[0] - state[2])/r_cent**3
         # massless bodies
         i_rhs = 2*num_galaxies # index for rhs and state arrays
         for i in range(n_total):
@@ -119,8 +126,12 @@ def main(g=4*np.pi**2, m=1, num_galaxies=1, galaxy_pos=np.array([[0, 0, 0]]),
             vel = state[i_rhs+1]
             rhs[i_rhs] = vel # velocity
             # a = GM(r1hat)/r1^2 + GM(r2hat)/r2^2
-            rhs[i_rhs+1] = (g*m*(state[0] - pos)/r1_array[i]**3 + 
-                            g*m*(state[2] - pos)/r2_array[i]**3)
+            if i_rhs < 4+n*2:
+                rhs[i_rhs+1] = (g*m*(state[0] - pos)/r1_array[i]**3 + 
+                                grav_gal*g*m*(state[2] - pos)/r2_array[i]**3)
+            else:
+                rhs[i_rhs+1] = (grav_gal*g*m*(state[0] - pos)/r1_array[i]**3 + 
+                                g*m*(state[2] - pos)/r2_array[i]**3)
             i_rhs += 2
         
         # update where the solver is at
@@ -138,12 +149,26 @@ def main(g=4*np.pi**2, m=1, num_galaxies=1, galaxy_pos=np.array([[0, 0, 0]]),
             print(str(np.round(time, 2)) + "/" + str(t_max) + " years calculated")
 
     # set up initial conditions
-    def initial_conditions():
+    def initial_conditions(r, v, angles):
         init_cond = np.zeros((num_equations//3, 3))
         # first set of initial conditions are for central bodies
         for i in range(num_galaxies):
             init_cond[i*2] = galaxy_pos[i]
             init_cond[i*2+1] = galaxy_vel[i]
+        # define rotation matrices (1 per galaxy)
+        # using angles alpha beta and gamma
+        alpha = angles[:,0]
+        beta = angles[:,1]
+        gamma = angles[:,2]
+        R = np.array([[np.cos(beta)*np.cos(gamma),
+                       np.sin(alpha)*np.sin(beta)*np.cos(gamma)-np.cos(alpha)*np.sin(gamma),
+                       np.cos(alpha)*np.sin(beta)*np.cos(gamma)+np.sin(alpha)*np.sin(gamma)],
+                      [np.cos(beta)*np.sin(gamma),
+                       np.sin(alpha)*np.sin(beta)*np.sin(gamma)+np.cos(alpha)*np.cos(gamma),
+                       np.cos(alpha)*np.sin(beta)*np.sin(gamma)-np.sin(alpha)*np.cos(gamma)],
+                      [-np.sin(beta),
+                       np.sin(alpha)*np.cos(beta),
+                       np.cos(alpha)*np.cos(beta)]])
         # build points in a circle (x and y are sin and cos)
         # it seems to require a lot of indexing
         i_ic = num_galaxies*2 # init cond index
@@ -151,12 +176,18 @@ def main(g=4*np.pi**2, m=1, num_galaxies=1, galaxy_pos=np.array([[0, 0, 0]]),
             i_rv = 0 # index of r and v arrays
             for i in range(num_rings):
                 for j in range(n_per_ring[i]):
-                    init_cond[i_ic] = ([r_array[i_rv]*np.sin(j/n_per_ring[i]*2*np.pi),
-                                     r_array[i_rv]*np.cos(j/n_per_ring[i]*2*np.pi),
-                                     0] + init_cond[2*gal_number])
-                    init_cond[i_ic+1] = ([v_array[i_rv]*np.cos(j/n_per_ring[i]*2*np.pi),
-                                       -v_array[i_rv]*np.sin(j/n_per_ring[i]*2*np.pi),
-                                       0] + init_cond[2*gal_number+1])
+                    # build circular motion of points
+                    init_cond[i_ic] = ([r[i_rv]*np.sin(j/n_per_ring[i]*2*np.pi),
+                                     r[i_rv]*np.cos(j/n_per_ring[i]*2*np.pi), 0])
+                    init_cond[i_ic+1] = ([-v[i_rv]*np.cos(j/n_per_ring[i]*2*np.pi),
+                                       v[i_rv]*np.sin(j/n_per_ring[i]*2*np.pi), 0])
+                    # multiply by rotation matrix to rotate points about axis
+                    init_cond[i_ic] = spl.solve(R[:,:,gal_number], init_cond[i_ic])
+                    init_cond[i_ic+1] = spl.solve(R[:,:,gal_number], init_cond[i_ic+1])
+                    # add position/velocity of com
+                    init_cond[i_ic] = init_cond[i_ic] + init_cond[2*gal_number]
+                    init_cond[i_ic+1] = init_cond[i_ic+1] + init_cond[2*gal_number+1]
+                    # continue weird indexing
                     i_ic += 2
                     i_rv += 1
         return init_cond
@@ -197,7 +228,7 @@ def main(g=4*np.pi**2, m=1, num_galaxies=1, galaxy_pos=np.array([[0, 0, 0]]),
         v_array = (g*m/r_array)**0.5
     
     # set up initial conditions
-    init_cond = initial_conditions()
+    init_cond = initial_conditions(r_array, v_array, euler_angles)
 
     # =============================================================================
     # Solution
