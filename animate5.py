@@ -18,17 +18,18 @@ import numpy as np
 plt.close('all')
 
 '''
-    Animation parameters:
-        x_spacing ; additional space to leave on plots in x-direction
-        y_spacing ; additional space to leave on plots in y-direction
-        animation_speed_scaling ; increase for faster animation
-        save_animation
-        animation_writer ; recommended either imagemagick or ffmpeg
-        animation_dir ; save animations to this directory
-        animation_file_name ; option to create custom file name:
-            - .gif for imagemagick, .mp4 for ffmpeg
-            - leave blank to automatically create file name
-            - do not start with '_ani' unless you want to confuse my dumb program
+Animation parameters:
+    x_spacing ; additional space to leave on plots in x-direction
+    y_spacing ; additional space to leave on plots in y-direction
+    animation_speed_scaling ; increase for faster animation
+    save_animation
+    animation_writer ; recommended either imagemagick or ffmpeg
+    animation_dir ; save animations to this directory
+    animation_file_name ; option to create custom file name:
+        - .gif for imagemagick, .mp4 for ffmpeg
+        - leave blank to automatically create file name
+        - do not start with '_ani' unless you want to confuse my dumb program
+    histograms ; set true to display histograms
 '''
 
 x_spacing = 0.1
@@ -47,7 +48,7 @@ histograms = True
 # rotated galaxy; euler angles in radians
 solution, num_galaxies = main.main(num_galaxies=1, galaxy_pos=np.array([[-10,-2,0]]),
                                    galaxy_vel=np.array([[0,0,0]]), euler_angles=np.array([[1.47,0.0,0.0]]),
-                                   t_max=1.0, nt=1001, num_rings=5, save=False, check_n=True)
+                                   t_max=1.0, nt=1001, num_rings=5, save=False, check_n=False)
 '''
 # multiple galaxies at different rotations with no gravity
 # also not sure why this is taking long time to run? not much is going on here
@@ -62,8 +63,6 @@ solution, num_galaxies = main.main(num_galaxies=2, galaxy_pos=np.array([[-2,-5,0
                                    t_max=5, nt=2001, r_outer=2, num_rings=1,
                                    check_n=True)
 '''
-
-
 
 
 n_total = np.shape(solution['y'])[0]//2-num_galaxies
