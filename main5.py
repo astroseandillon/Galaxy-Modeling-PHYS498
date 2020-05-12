@@ -16,7 +16,6 @@ animation_speed_scaling, solution, t_max, N
 animate.py takes the parameters above and creates an animation
 """
 
-import csv
 import numpy as np
 import os
 import scipy.integrate as spi
@@ -206,7 +205,7 @@ def main(g=4*np.pi**2, m=1, num_galaxies=1, galaxy_pos=np.array([[0,0,0]]),
         file = open(dir_name + '/' + file_name, 'wb')
         np.savez(file, solution=sol, parameters=params)
         file.close()
-
+    
     # =============================================================================
     # Additional variables
     # =============================================================================

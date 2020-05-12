@@ -32,6 +32,7 @@ The integration scheme:
 
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.integrate as spi
 plt.close('all')
 
 # coefficients for fourth-order integration
@@ -116,27 +117,48 @@ def fourth_order_equation(t, q0, p0):
     z = np.array((q, p))
     return z
 
+
+def rhs(time,state):
+
+    position = state[0]
+    velocity = state[1]
+    
+    rhs = np.zeros(2)
+    rhs[0] = velocity
+    rhs[1] = -(g/(M*L))*np.sin(position)
+    
+    return rhs
+
+sivp_solution1 = spi.solve_ivp(rhs, [t_min,t_max], [q0,p0/M], t_eval=times, method="RK45")
+sivp_solution2 = spi.solve_ivp(rhs, [t_min,t_max], [q0,p0/M], t_eval=times, method="Radau")
 testfun = first_order_equation(times, q0, p0)
 new_integrator = fourth_order_equation(times, q0, p0)
 
 x = testfun[0,:]
 y = testfun[1,:]
-
 new_x = new_integrator[0,:]
 new_y = new_integrator[1,:]
+sivp_x1 = sivp_solution1['y'][0,:]
+sivp_y1 = sivp_solution1['y'][1,:]
+sivp_x2 = sivp_solution2['y'][0,:]
+sivp_y2 = sivp_solution2['y'][1,:]
 
 plt.figure()
-plt.plot(times, x, 'o', label="first order")
-plt.plot(times, new_x, '.', label="fourth order")
+plt.plot(times, x, 'o', label="first order SI")
+plt.plot(times, new_x, '.', label="fourth order SI")
+plt.plot(times, sivp_x1, '-c', label="solve_ivp RK45")
+plt.plot(times, sivp_x2, '--k', label="solve_ivp Radau")
 plt.title("Symplectic Integrator Test")
 plt.ylabel("Position")
 plt.xlabel("Time")
 plt.legend()
 
 plt.figure()
-plt.plot(times, H(testfun), label="first order")
-plt.plot(times, H(new_integrator), label="fourth order")
-plt.title("conservation of energy i think")
+plt.plot(times, H(testfun), label="first order SI")
+plt.plot(times, H(new_integrator), label="fourth order SI")
+plt.plot(times, H(sivp_solution1['y']), label="solve_ivp RK45")
+plt.plot(times, H(sivp_solution2['y']), label="solve_ivp Radau")
+plt.title("Conservation of Energy?")
 plt.xlabel('time')
 plt.ylabel("hamiltonian")
 plt.legend()

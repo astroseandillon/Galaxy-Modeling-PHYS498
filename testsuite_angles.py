@@ -26,11 +26,14 @@ angles[24:,1] = angle_range
 angles[24:,0] += np.pi/2
 angles[24:,2] += np.pi/2
 
-for angle in angles:
+for i in range(9,len(angles)):
+    file_name = 'reg_run_' + str(i+1)
+    print('starting for ' + file_name)
     main.main(num_galaxies=2, galaxy_pos=np.array([[-2,-5,0],[2,5,0]]),
               galaxy_vel=np.array([[0,3,0],[0,-3,0]]), 
-              euler_angles=np.array([[0,0,0],angle]), r_outer=2,
-              t_max=5, nt=2001, dir_name=dir_name, check_n=False)
+              euler_angles=np.array([[0,0,0],angles[i]]), r_outer=2,
+              t_max=5, nt=2001, dir_name=dir_name, file_name=file_name,
+              check_n=False)
 
 # change rotation: Monte Carlo style
 dir_name = 'data/angle_data_1/mc'
@@ -42,11 +45,14 @@ for i in range(num_trials*3):
     angles[i] = random.uniform(-np.pi/2,np.pi/2)
 angles = np.reshape(angles, (num_trials,3))
 
-for angle in angles:
+for i in range(len(angles)):
+    file_name = 'rand_run_' + str(i)
+    print('starting for ' + file_name)
     main.main(num_galaxies=2, galaxy_pos=np.array([[-2,-5,0],[2,5,0]]),
               galaxy_vel=np.array([[0,3,0],[0,-3,0]]), 
-              euler_angles=np.array([[0,0,0],angle]), r_outer=2,
-              t_max=5, nt=2001, dir_name=dir_name, check_n=False)
+              euler_angles=np.array([[0,0,0],angles[i]]), r_outer=2,
+              t_max=5, nt=2001, dir_name=dir_name, file_name=file_name,
+              check_n=False)
 
 
 
